@@ -1,2 +1,16 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+﻿open Evaluator
+open System
+open Parser
+
+[<EntryPoint>]
+let main args =
+    let file = args[0]
+    let text = IO.File.ReadAllText file
+    match parse text with
+    | Some ast ->
+        let svg = eval ast
+        printfn "%s" svg
+        0
+    | None ->
+        printfn "Invalid program."
+        1
