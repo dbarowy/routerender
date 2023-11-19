@@ -1,10 +1,6 @@
 module Evaluator
 
 open Parser
-
-module Evaluator
-
-open Parser
 open AST
 
 

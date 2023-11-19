@@ -98,5 +98,5 @@ let grammar = pleft defense peof
 let parse (input: string) : Canvas option = 
     let i = prepare input
     match grammar i with
-    | Success(ast, _) -> Some ast
+    | Success(ast, _) -> Some [ast]
     | Failure(_,_) -> None
