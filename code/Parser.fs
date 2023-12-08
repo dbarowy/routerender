@@ -77,7 +77,7 @@ let route =
         )
         (pchar ')')
 
-let routes =
+let routes: Parser<Routes> =
     pbetween
         (pchar '[')
         (pseq
@@ -127,15 +127,20 @@ let firstHalf =
     pseq defense formation (fun (d,f) -> (d,f))
 let secondHalf =
     pseq scheme routes (fun (s,rs) -> (s,rs))
-
-let play =
+let fullPlay: Parser<Play> =
     pseq firstHalf secondHalf (fun (f,s) -> (fst f, snd f, fst s, snd s))
+let play: Parser<Play> = pleft fullPlay (pchar ';')
+let plays: Parser<Playbook> =
+    pseq
+        (pmany0 (pleft play pnl))
+        (play)
+        (fun (ps, p) -> p::ps)
 
 //Grammar
-let grammar = pleft play peof
+let grammar: Parser<Playbook> = pleft plays peof
 
-let parse (input: string) : Canvas option = 
+let parse (input: string): Playbook option= 
     let i = prepare input
     match grammar i with
-    | Success(ast, _) -> Some [ast]
+    | Success(ast, _) -> Some ast
     | Failure(_,_) -> None
