@@ -85,8 +85,7 @@ let routes =
             (route)
             (fun (rs, r) -> r::rs)
         )
-        (pchar ']') 
-        |>> (fun rs -> Routes(rs))
+        (pchar ']')
 
 //Schemes
 let scheme = 
@@ -112,10 +111,28 @@ let unit =
     (pstr "singleback" |>> (fun _ -> Singleback)) <|>
     (pstr "shotgun" |>> (fun _ -> Shotgun))
 
-    
+//Formations
+let formation =
+    pbetween
+        (pchar '(')
+        (pseq
+            (pleft unit (pad (pchar ',')))
+            (receivers)
+            (fun (u, r) -> Formation(u,r))
+        )
+        (pchar ')')
+
+//Plays
+let firstHalf =
+    pseq defense formation (fun (d,f) -> (d,f))
+let secondHalf =
+    pseq scheme routes (fun (s,rs) -> (s,rs))
+
+let play =
+    pseq firstHalf secondHalf (fun (f,s) -> (fst f, snd f, fst s, snd s))
 
 //Grammar
-let grammar = pleft defense peof
+let grammar = pleft play peof
 
 let parse (input: string) : Canvas option = 
     let i = prepare input

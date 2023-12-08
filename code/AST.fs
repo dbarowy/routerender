@@ -40,7 +40,7 @@ type Read =
 | Fourth
 | Fifth
 type Route = Player * Movement * Read
-type Routes =  Routes of Route list
+type Routes =  Route list
 
 type Scheme =
 | Power
@@ -51,13 +51,14 @@ type Scheme =
 type Receivers =
 | NoReceivers
 | YesReceivers of char * char
-
 type Unit =
 | IForm
 | Empty
 | Singleback
 | Shotgun
+type Formation = Unit * Receivers
 
 
-type Canvas = Defense list
+type Play = Defense * Formation * Scheme * Routes
+type Canvas = Play list
 let CANVAS_SZ = 1500
