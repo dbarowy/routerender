@@ -14,12 +14,14 @@ let coverage =
     (pstr "cover2" |>> (fun _ -> Cover2)) <|>
     (pstr "cover3" |>> (fun _ -> Cover3)) <|>
     (pstr "cover4" |>> (fun _ -> Cover4)) <|>
-    (pstr "cover6" |>> (fun _ -> Cover6))
+    (pstr "cover6" |>> (fun _ -> Cover6)) <!>
+    "coverage"
 
 //Box
 let box = 
     (pstr "34" |>> (fun _ -> ThreeFour)) <|> 
-    (pstr "43" |>> (fun _ -> FourThree))
+    (pstr "43" |>> (fun _ -> FourThree)) <!>
+    "box"
 
 //Defense
 let defense =
@@ -27,6 +29,7 @@ let defense =
         (pstr "(")
         (pseq (pleft box (pad (pstr ","))) coverage (fun (b, c) -> Defense(b,c)))
         (pstr ")")
+    <!> "defense"
 
 //Reads
 let read = 
@@ -34,7 +37,8 @@ let read =
     (pchar '2' |>> (fun _ -> Second)) <|>
     (pchar '3' |>> (fun _ -> Third)) <|>
     (pchar '4' |>> (fun _ -> Fourth)) <|>
-    (pchar '5' |>> (fun _ -> Fifth))
+    (pchar '5' |>> (fun _ -> Fifth)) <!>
+    "read"
 
 //Movements
 let movement =
@@ -51,7 +55,8 @@ let movement =
     (pstr "wheel" |>> (fun _ -> Wheel)) <|>
     ((pstr "postcorner" <|> pstr "post-corner" <|> pstr "post corner") |>> (fun _ -> PostCorner)) <|>
     (pstr "fade" |>> (fun _ -> Fade)) <|>
-    (pstr "screen" |>> (fun _ -> Screen))
+    (pstr "screen" |>> (fun _ -> Screen)) <!>
+    "movement"
 
 //Player
 let player = 
@@ -59,7 +64,8 @@ let player =
     ((pchar 'y' <|> pchar 'Y') |>> (fun _ -> Y)) <|> 
     ((pchar 'z' <|> pchar 'Z') |>> (fun _ -> Z)) <|> 
     ((pchar 'h' <|> pchar 'H') |>> (fun _ -> H)) <|> 
-    ((pchar 'a' <|> pchar 'A') |>> (fun _ -> A)) 
+    ((pchar 'a' <|> pchar 'A') |>> (fun _ -> A)) <!>
+    "player"
     
 
 //Routes
@@ -76,6 +82,7 @@ let route =
             (fun (p, (m, r)) -> Route(p,m,r))
         )
         (pchar ')')
+    <!> "route"
 
 let routes: Parser<Routes> =
     pbetween
@@ -86,30 +93,33 @@ let routes: Parser<Routes> =
             (fun (rs, r) -> r::rs)
         )
         (pchar ']')
+    <!> "routes"
 
 //Schemes
 let scheme = 
     (pad (pstr "power") |>> (fun _ -> Power)) <|>
     (pad (pstr "counter") |>> (fun _ -> Counter)) <|>
     (pad (pstr "inside zone" <|> pstr "insidezone" <|> pstr "insideZone") |>> (fun _ -> InsideZone)) <|>
-    (pad (pstr "outside zone" <|> pstr "outsidezone" <|> pstr "outsideZone") |>> (fun _ -> OutsideZone))
+    (pad (pstr "outside zone" <|> pstr "outsidezone" <|> pstr "outsideZone") |>> (fun _ -> OutsideZone)) <!>
+    "scheme"
 
 //Receivers
-let noReceivers = (pad (pchar '_') |>> (fun _ -> NoReceivers))
+let noReceivers = (pad (pchar '_') |>> (fun _ -> NoReceivers)) <!> "noRec"
 let yesReceivers =
     pad (pseq
         (pleft pdigit (pad (pchar 'x')))
         pdigit
         (fun (d1,d2) ->
-            if int(d1) + int(d2) <= 6 then YesReceivers(d1,d2) else NoReceivers))
-let receivers = noReceivers <|> yesReceivers
+            if int(d1) + int(d2) < 6 then YesReceivers(d1,d2) else NoReceivers)) <!> "yesRec"
+let receivers = noReceivers <|> yesReceivers <!> "receivers"
 
 //Units
 let unit =
     (pstr "iformation" |>> (fun _ -> IForm)) <|>
     (pstr "empty" |>> (fun _ -> Empty)) <|>
     (pstr "singleback" |>> (fun _ -> Singleback)) <|>
-    (pstr "shotgun" |>> (fun _ -> Shotgun))
+    (pstr "shotgun" |>> (fun _ -> Shotgun)) <!>
+    "unit"
 
 //Formations
 let formation =
@@ -121,21 +131,22 @@ let formation =
             (fun (u, r) -> Formation(u,r))
         )
         (pchar ')')
+    <!> "formation"
 
 //Plays
 let firstHalf =
-    pseq defense formation (fun (d,f) -> (d,f))
+    pseq defense formation (fun (d,f) -> (d,f)) <!> "firstHalf"
 let secondHalf =
-    pseq scheme routes (fun (s,rs) -> (s,rs))
+    pseq scheme routes (fun (s,rs) -> (s,rs)) <!> "secondHalf"
 let fullPlay: Parser<Play> =
-    pseq firstHalf secondHalf (fun (f,s) -> (fst f, snd f, fst s, snd s))
-let play: Parser<Play> = pleft fullPlay (pchar ';')
+    pseq firstHalf secondHalf (fun (f,s) -> (fst f, snd f, fst s, snd s)) <!> "fullPlay"
+let play = pleft fullPlay (pchar ';') <!> "play"
 
 //Grammar
-let grammar: Parser<Play> = pleft play peof
+let grammar = pleft play peof <!> "grammar"
 
 let parse (input: string): Play option= 
-    let i = prepare input
+    let i = debug input
     match grammar i with
     | Success(ast, _) -> Some ast
     | Failure(_,_) -> None

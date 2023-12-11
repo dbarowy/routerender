@@ -48,7 +48,7 @@ let evalFormation(unit: Unit, rs: Receivers) =
     let boundryTup = (1, boundry)
 
     let rec drawField(x: int, c: int) = 
-        if x = c then
+        if x > c then
             ""
         else
             // need better way to extract position from Routes list 
@@ -60,7 +60,7 @@ let evalFormation(unit: Unit, rs: Receivers) =
                 Yval <- 485
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawField(x + 1, c)
     let rec drawBoundry(x: int, c: int) = 
-        if x = c then
+        if x > c then
             ""
         else
             let pos = ['X','A']
