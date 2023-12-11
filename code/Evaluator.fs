@@ -2,12 +2,7 @@ module Evaluator
 
 open Parser
 open AST
-
-let x_cords = (0,0)
-let y_cords = (0,0)
-let z_cords = (0,0)
-let a_cords = (0,0)
-
+open Coordinates
 
 let evalRoutes(routes: Routes) = 
     let rec extractPlayers(routes: Routes) = 
@@ -36,7 +31,6 @@ let evalRoutes(routes: Routes) =
     ""
 
 let evalFormation(unit: Unit, rs: Receivers) =
-    printfn "%A" rs
 
     let getRec(r: Receivers) = 
       match r with
@@ -52,7 +46,6 @@ let evalFormation(unit: Unit, rs: Receivers) =
         if x = c then
             ""
         else
-            printfn "FIELD"
             // need better way to extract position from Routes list 
             let pos = ['Y';'Z';'A'][x]
             // Update cords here for routes 
@@ -60,18 +53,35 @@ let evalFormation(unit: Unit, rs: Receivers) =
             let mutable Yval = 425
             if x > 0 then
                 Yval <- 485
+
+            match pos with
+            | 'Y' -> 
+              printfn "%A" (Xval, Yval)
+              y_cords <- (Xval, Yval)
+            | 'Z' -> z_cords <- (Xval, Yval)
+            | 'A' -> a_cords <- (Xval, Yval)
+
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawField(x + 1, c)
     let rec drawBoundry(x: int, c: int) = 
         if x = c then
             ""
         else
-            printfn "BND"
             let pos = ['X'; 'H'; 'A'][x]
             let Xval = 930 + 150 * (x+1)
             let mutable Yval = 425
-            if x > 1 then
+            if x > 0 then
                 Yval <- 485
+
+            match pos with
+            | 'X' -> x_cords <- (Xval, Yval)
+            | 'H' -> h_cords <- (Xval, Yval)
+            | 'A' -> a_cords <- (Xval, Yval)
+
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawBoundry(x + 1, c)
+    
+    printfn "%A" x_cords 
+    printfn "%A" y_cords
+    
     drawField fieldTup + drawBoundry boundryTup
 
 let evalScheme(schm: Scheme) =
@@ -211,7 +221,7 @@ let eval (play: Play) : string =
 
     let OLine ="<circle cx=\"530\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <circle cx=\"610\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
-  <rect x=\"660\" y=\"395\" width=\"60\" height=\"60\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n
+  <rect x=\"660\" y=\"395\" width=\"60\" height=\"60\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <circle cx=\"770\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <circle cx=\"850\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n"
 
