@@ -8,10 +8,9 @@ let main args =
     let text = IO.File.ReadAllText file
     match parse text with
     | Some ast ->
-        let svg = evalPlaybook ast
+        let svg = eval ast
         printfn "%s" svg
         0
     | None ->
-        printfn "%s" text
         printfn "Invalid program."
         1

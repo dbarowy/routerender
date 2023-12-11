@@ -110,7 +110,8 @@ let yesReceivers =
         (pleft pdigit (pad (pchar 'x')))
         pdigit
         (fun (d1,d2) ->
-            if int(d1) + int(d2) < 6 then YesReceivers(d1,d2) else NoReceivers)) <!> "yesRec"
+            
+            if (int(d1) - int('0')) + (int(d2) - int('0')) < 6 then YesReceivers(d1,d2) else NoReceivers)) <!> "yesRec"
 let receivers = noReceivers <|> yesReceivers <!> "receivers"
 
 //Units
@@ -146,7 +147,7 @@ let play = pleft fullPlay (pchar ';') <!> "play"
 let grammar = pleft play peof <!> "grammar"
 
 let parse (input: string): Play option= 
-    let i = debug input
+    let i = prepare input
     match grammar i with
     | Success(ast, _) -> Some ast
     | Failure(_,_) -> None

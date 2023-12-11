@@ -36,40 +36,42 @@ let evalRoutes(routes: Routes) =
     ""
 
 let evalFormation(unit: Unit, rs: Receivers) =
-  
+    printfn "%A" rs
+
     let getRec(r: Receivers) = 
-      match rs with
-      | YesReceivers (fld, bnd) -> (int fld, int bnd) 
+      match r with
+      | YesReceivers(fld: char, bnd: char) -> (int fld - int('0'), int bnd - int('0')) 
       | NoReceivers -> (0,0)
   
     let field, boundry = getRec(rs)
 
-    let fieldTup = (1, field)
-    let boundryTup = (1, boundry)
-
+    let fieldTup = (0, field)
+    let boundryTup = (0, boundry)
+ 
     let rec drawField(x: int, c: int) = 
-        if x > c then
+        if x = c then
             ""
         else
+            printfn "FIELD"
             // need better way to extract position from Routes list 
             let pos = ['Y';'Z';'A'][x]
             // Update cords here for routes 
-            let Xval = 600 - 150 * x
+            let Xval = 600 - 150 * (x+1)
             let mutable Yval = 425
-            if x > 1 then
+            if x > 0 then
                 Yval <- 485
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawField(x + 1, c)
     let rec drawBoundry(x: int, c: int) = 
-        if x > c then
+        if x = c then
             ""
         else
-            let pos = ['X','A']
-            let Xval = 930 + 150 * x
+            printfn "BND"
+            let pos = ['X'; 'H'; 'A'][x]
+            let Xval = 930 + 150 * (x+1)
             let mutable Yval = 425
             if x > 1 then
                 Yval <- 485
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawBoundry(x + 1, c)
- 
     drawField fieldTup + drawBoundry boundryTup
 
 let evalScheme(schm: Scheme) =
@@ -207,11 +209,11 @@ let evalPlay (play: Play) =
 let eval (play: Play) : string =
     let csz = CANVAS_SZ |> string
 
-    let OLine ="<circle cx=\"530\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n
-  <circle cx=\"610\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n
+    let OLine ="<circle cx=\"530\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+  <circle cx=\"610\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <rect x=\"660\" y=\"395\" width=\"60\" height=\"60\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n
-  <circle cx=\"770\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n
-  <circle cx=\"850\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n"
+  <circle cx=\"770\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+  <circle cx=\"850\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n"
 
     
     "<svg width=\"" + csz + "\" height=\"" + csz + "\"" +
@@ -222,9 +224,3 @@ let eval (play: Play) : string =
 
     (evalPlay play)
     + "</svg>\n"
-
-
-let rec evalPlaybook(playbook: Playbook) =
-  match playbook with
-  | [] -> ""
-  | l::ls -> eval l + evalPlaybook ls
