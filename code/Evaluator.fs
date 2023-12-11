@@ -3,7 +3,76 @@ module Evaluator
 open Parser
 open AST
 
-let evalScheme(schm: string) =
+let x_cords = (0,0)
+let y_cords = (0,0)
+let z_cords = (0,0)
+let a_cords = (0,0)
+
+
+let evalRoutes(routes: Routes) = 
+    let rec extractPlayers(routes: Routes) = 
+      let position_list= []
+      match routes with
+      | [] -> position_list
+      | (p, _, _)::ls -> p::position_list @ extractPlayers(ls)
+
+    let rec extractMovements(routes: Routes) =
+      let movement_list = []
+      match routes with
+      | [] -> movement_list
+      | (_,m,_)::ls -> m::movement_list @ extractMovements(ls)
+
+    let rec extractReads(routes: Routes) =
+      let read_list = []
+      match routes with
+      | [] -> read_list
+      | (_,_,r)::ls -> r::read_list @ extractReads(ls)
+
+    let players = extractPlayers(routes)
+    
+
+    let movements = extractMovements(routes)
+    let reads = extractReads(routes)
+    ""
+
+let evalFormation(unit: Unit, rs: Receivers) =
+  
+    let getRec(r: Receivers) = 
+      match rs with
+      | YesReceivers (fld, bnd) -> (int fld, int bnd) 
+      | NoReceivers -> (0,0)
+  
+    let field, boundry = getRec(rs)
+
+    let fieldTup = (1, field)
+    let boundryTup = (1, boundry)
+
+    let rec drawField(x: int, c: int) = 
+        if x = c then
+            ""
+        else
+            // need better way to extract position from Routes list 
+            let pos = ['Y';'Z';'A'][x]
+            // Update cords here for routes 
+            let Xval = 600 - 150 * x
+            let mutable Yval = 425
+            if x > 1 then
+                Yval <- 485
+            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawField(x + 1, c)
+    let rec drawBoundry(x: int, c: int) = 
+        if x = c then
+            ""
+        else
+            let pos = ['X','A']
+            let Xval = 930 + 150 * x
+            let mutable Yval = 425
+            if x > 1 then
+                Yval <- 485
+            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawBoundry(x + 1, c)
+ 
+    drawField fieldTup + drawBoundry boundryTup
+
+let evalScheme(schm: Scheme) =
     let pwr34 = "<!--Power Scheme against 3-4 Defense-->\n
     <!--Labeling Keys-->\n
     <text x=\"417\" y=\"285\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
@@ -74,7 +143,7 @@ let evalScheme(schm: string) =
     <line x1=\"850\" y1=\"395\" x2=\"640\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
     <line x1=\"630\" y1=\"305\" x2=\"650\" y2=\"275\" stroke=\"black\" stroke-width=\"3\"/>\n"
 
-     let ctr43 = "<!--Counter Scheme against 4-3 Defense-->\n
+    let ctr43 = "<!--Counter Scheme against 4-3 Defense-->\n
   <!--Labeling Keys-->\n
   <text x=\"555\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
   <!--Pull for -1-->\n
@@ -100,11 +169,11 @@ let evalScheme(schm: string) =
 
 
     match schm with
-    | "power" -> pwr
-    | "counter" -> ctr
+    | Power -> pwr34
+    | Counter -> ctr34
     | _ -> ""
 
-let evalDefense (cov: string, box: string) =
+let evalDefense (box: Box, cov: Coverage) =
 
     let three_four = "<text x=\"510\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">F</text>\n
     <text x=\"670\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">N</text>\n
@@ -123,21 +192,19 @@ let evalDefense (cov: string, box: string) =
     <text x=\"540\" y=\"285\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">W</text>\n"
 
     let cover_2 = "<text x=\"380\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
-    <text x=\"970\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
-    <text x=\"150\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
-    <text x=\"1190\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
-    
+  <text x=\"970\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
+  <text x=\"150\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
+  <text x=\"1190\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
     match box, cov with
-    | "43", cover2 -> four_three + cover_2
+    | FourThree, cover2 -> four_three + cover_2
     | _, _-> three_four + cover_2
     
-let rec evalCanvas (canvas: Canvas) =
-    match canvas with
-    | [] -> ""
-    | l::ls -> (evalDefense l) + (evalCanvas ls)
+let evalPlay (play: Play) =
+    match play with
+    | (a,b,c,d) -> evalDefense a + evalFormation b + evalScheme c + evalRoutes d
 
 
-let eval (canvas: Canvas) : string =
+let eval (play: Play) : string =
     let csz = CANVAS_SZ |> string
 
     let OLine ="<circle cx=\"530\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>\n
@@ -153,5 +220,11 @@ let eval (canvas: Canvas) : string =
 
     OLine +
 
-    (evalCanvas canvas)
+    (evalPlay play)
     + "</svg>\n"
+
+
+let rec evalPlaybook(playbook: Playbook) =
+  match playbook with
+  | [] -> ""
+  | l::ls -> eval l + evalPlaybook ls
