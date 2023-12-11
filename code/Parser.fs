@@ -130,16 +130,11 @@ let secondHalf =
 let fullPlay: Parser<Play> =
     pseq firstHalf secondHalf (fun (f,s) -> (fst f, snd f, fst s, snd s))
 let play: Parser<Play> = pleft fullPlay (pchar ';')
-let plays: Parser<Playbook> =
-    pseq
-        (pmany0 (pleft play pnl))
-        (play)
-        (fun (ps, p) -> p::ps)
 
 //Grammar
-let grammar: Parser<Playbook> = pleft plays peof
+let grammar: Parser<Play> = pleft play peof
 
-let parse (input: string): Playbook option= 
+let parse (input: string): Play option= 
     let i = prepare input
     match grammar i with
     | Success(ast, _) -> Some ast

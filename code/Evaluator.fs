@@ -196,7 +196,7 @@ let evalDefense (box: Box, cov: Coverage) =
   <text x=\"150\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
   <text x=\"1190\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
     match box, cov with
-    | FourThree, cover2 -> four_three + cover_2
+    | FourThree, Cover2 -> four_three + cover_2
     | _, _-> three_four + cover_2
     
 let evalPlay (play: Play) =
