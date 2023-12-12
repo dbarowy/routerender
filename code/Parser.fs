@@ -136,9 +136,9 @@ let formation =
 
 //Plays
 let firstHalf =
-    pseq defense formation (fun (d,f) -> (d,f)) <!> "firstHalf"
+    pseq defense scheme (fun (d,s) -> (d,s)) <!> "firstHalf"
 let secondHalf =
-    pseq scheme routes (fun (s,rs) -> (s,rs)) <!> "secondHalf"
+    pseq routes formation (fun (rs,f) -> (rs,f)) <!> "secondHalf"
 let fullPlay: Parser<Play> =
     pseq firstHalf secondHalf (fun (f,s) -> (fst f, snd f, fst s, snd s)) <!> "fullPlay"
 let play = pleft fullPlay (pchar ';') <!> "play"

@@ -2,7 +2,6 @@ module Evaluator
 
 open Parser
 open AST
-open Coordinates
 
 let evalRoutes(routes: Routes) = 
     let rec extractPlayers(routes: Routes) = 
@@ -37,10 +36,10 @@ let evalFormation(unit: Unit, rs: Receivers) =
       | YesReceivers(fld: char, bnd: char) -> (int fld - int('0'), int bnd - int('0')) 
       | NoReceivers -> (0,0)
   
-    let field, boundry = getRec(rs)
+    let field, boundary = getRec(rs)
 
     let fieldTup = (0, field)
-    let boundryTup = (0, boundry)
+    let boundaryTup = (0, boundary)
  
     let rec drawField(x: int, c: int) = 
         if x = c then
@@ -54,15 +53,8 @@ let evalFormation(unit: Unit, rs: Receivers) =
             if x > 0 then
                 Yval <- 485
 
-            match pos with
-            | 'Y' -> 
-              printfn "%A" (Xval, Yval)
-              y_cords <- (Xval, Yval)
-            | 'Z' -> z_cords <- (Xval, Yval)
-            | 'A' -> a_cords <- (Xval, Yval)
-
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawField(x + 1, c)
-    let rec drawBoundry(x: int, c: int) = 
+    let rec drawBoundary(x: int, c: int) = 
         if x = c then
             ""
         else
@@ -72,17 +64,9 @@ let evalFormation(unit: Unit, rs: Receivers) =
             if x > 0 then
                 Yval <- 485
 
-            match pos with
-            | 'X' -> x_cords <- (Xval, Yval)
-            | 'H' -> h_cords <- (Xval, Yval)
-            | 'A' -> a_cords <- (Xval, Yval)
-
-            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawBoundry(x + 1, c)
+            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawBoundary(x + 1, c)
     
-    printfn "%A" x_cords 
-    printfn "%A" y_cords
-    
-    drawField fieldTup + drawBoundry boundryTup
+    drawField fieldTup + drawBoundary boundaryTup
 
 let evalScheme(schm: Scheme) =
     let pwr34 = "<!--Power Scheme against 3-4 Defense-->\n
@@ -213,7 +197,7 @@ let evalDefense (box: Box, cov: Coverage) =
     
 let evalPlay (play: Play) =
     match play with
-    | (a,b,c,d) -> evalDefense a + evalFormation b + evalScheme c + evalRoutes d
+    | (a,b,c,d) -> evalDefense a + evalScheme b + evalRoutes c + evalFormation d
 
 
 let eval (play: Play) : string =

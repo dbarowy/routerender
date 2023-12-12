@@ -59,5 +59,5 @@ type Unit =
 type Formation = Unit * Receivers
 
 
-type Play = Defense * Formation * Scheme * Routes
+type Play = Defense * Scheme * Routes * Formation
 let CANVAS_SZ = 1500
