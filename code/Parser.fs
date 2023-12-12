@@ -52,7 +52,7 @@ let movement =
     (pstr "dig" |>> (fun _ -> Dig)) <|>
     (pstr "hitch" |>> (fun _ -> Hitch)) <|>
     (pstr "comeback" |>> (fun _ -> Comeback)) <|>
-    (pstr "wheel" |>> (fun _ -> Wheel)) <|>
+    (pstr "block" |>> (fun _ -> Block)) <|>
     ((pstr "postcorner" <|> pstr "post-corner" <|> pstr "post corner") |>> (fun _ -> PostCorner)) <|>
     (pstr "fade" |>> (fun _ -> Fade)) <|>
     (pstr "screen" |>> (fun _ -> Screen)) <!>
@@ -99,8 +99,8 @@ let routes: Parser<Routes> =
 let scheme = 
     (pad (pstr "power") |>> (fun _ -> Power)) <|>
     (pad (pstr "counter") |>> (fun _ -> Counter)) <|>
-    (pad (pstr "inside zone" <|> pstr "insidezone" <|> pstr "insideZone") |>> (fun _ -> InsideZone)) <|>
-    (pad (pstr "outside zone" <|> pstr "outsidezone" <|> pstr "outsideZone") |>> (fun _ -> OutsideZone)) <!>
+    (pad (pstr "inside zone" <|> pstr "insidezone" <|> pstr "insideZone" <|> pstr "iz" <|> pstr "IZ") |>> (fun _ -> InsideZone)) <|>
+    (pad (pstr "outside zone" <|> pstr "outsidezone" <|> pstr "outsideZone"  <|> pstr "oz" <|> pstr "OZ") |>> (fun _ -> OutsideZone)) <!>
     "scheme"
 
 //Receivers

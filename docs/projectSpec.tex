@@ -266,19 +266,19 @@ The combining forms, offensive and defensive plays, are the combination of these
 
 \subsection{Formal Syntax}
 
-$\langle program\rangle  ::= \langle play\rangle ^+\: $ \\
-$\langle play\rangle  ::= \langle defense\rangle  \langle formation\rangle  \langle scheme\rangle  \langle routes\rangle \: $ \\
+$\langle program\rangle  ::= \langle play\rangle\: $ \\
+$\langle play\rangle  ::= \langle defense\rangle  \langle scheme\rangle  \langle routes\rangle  \langle formation\rangle \: $ \\
 $\langle defense\rangle  ::= (\langle box\rangle \:, \langle coverage\rangle )\: $ \\
 $\langle box\rangle  ::= 34 \:\mathrel{|}  43\: $ \\
 $\langle coverage\rangle  ::= man \:\mathrel{|}  cover1 \:\mathrel{|}  cover2 \:\mathrel{|}  cover3 \:\mathrel{|}  cover4 \:\mathrel{|}  cover6 \: $ \\
 $\langle formation\rangle  ::= (\langle unit\rangle \:,\langle receivers\rangle )\: $\\
 $\langle unit\rangle  ::= iformation \:\mathrel{|}  empty \:\mathrel{|}  singleback \:\mathrel{|}  shotgun\: $\\
-$\langle receivers\rangle  ::= (a, b); \: a + b <  6;\: a,\: b\: are \:integers \:greater \:than \:0 \:\mathrel{|} \_ $\\
+$\langle receivers\rangle  ::= (a x b); \: a + b <  6;\: a,\: b\: are \:integers \:greater \:than \:0 \:\mathrel{|} \_ $\\
 $\langle scheme\rangle  ::= power \:\mathrel{|}  counter \:\mathrel{|}  inside zone \:\mathrel{|}  outside zone\: $ \\
-$\langle routes\rangle  ::= \langle route\rangle * list\: $ \\
+$\langle routes\rangle  ::= \langle route\rangle * list\: |$ length of routes $=$ $a+b$ from receivers \\
 $\langle route\rangle  ::= (player,\: movement,\: read) \: $ \\
 $\langle player\rangle  ::= x \:\mathrel{|}  y \:\mathrel{|}  z \:\mathrel{|}  h \:\mathrel{|}  a\: $ \\
-$\langle movement\rangle  ::= Go \:\mathrel{|}  Slant \:\mathrel{|}  Out \:\mathrel{|}  In \:\mathrel{|}  Post \:\mathrel{|}  Corner \:\mathrel{|}  Curl \:\mathrel{|}  Dig \:\mathrel{|}  Hitch \:\mathrel{|}  Comeback \:\mathrel{|}  Wheel \:\mathrel{|}  Post-Corner \:\mathrel{|}  Fade \:\mathrel{|}  Screen\: $\\
+$\langle movement\rangle  ::= Go \:\mathrel{|}  Slant \:\mathrel{|}  Out \:\mathrel{|}  In \:\mathrel{|}  Post \:\mathrel{|}  Corner \:\mathrel{|}  Curl \:\mathrel{|}  Dig \:\mathrel{|}  Hitch \:\mathrel{|}  Comeback \:\mathrel{|}  Block \:\mathrel{|}  Post-Corner \:\mathrel{|}  Fade \:\mathrel{|}  Screen\: $\\
 $\langle read\rangle  ::= 1 \:\mathrel{|}  2 \:\mathrel{|}  3 \:\mathrel{|}  4 \:\mathrel{|}  5\: $
 
 \subsection{Semantics}
@@ -308,11 +308,13 @@ $\langle read\rangle  ::= 1 \:\mathrel{|}  2 \:\mathrel{|}  3 \:\mathrel{|}  4 \
         \hline
         iformation & Unit of string & string & describes the unit of the offense \\
         \hline
-        (2, 1) & Receivers of int $\ast$ int & int $\ast$ int & describes the alignment of the receivers \\
+        (2x1) & Receivers of int $\ast$ int & int $\ast$ int & describes the alignment of the receivers \\
         \hline
-        (iformation, (2,1)) & Formation of Unit $\ast$ Receivers & string $\ast$ (int $\ast$ int) & describes a full formation for the offense including the scheme and where the receivers are \\
+        (iformation, (2x1)) & Formation of Unit $\ast$ Receivers & string $\ast$ (int $\ast$ int) & describes a full formation for the offense including the scheme and where the receivers are \\
         \hline
-        (43, cover1)(iformation, (2,1))power[(x, post, 1), (y, corner, 2), (z, dig, 3)] & Play of Defense $\ast$ Formation $\ast$ Scheme $\ast$ Routes & (string $\ast$ string) $\ast$ (string $\ast$ (int $\ast$ int)) $\ast$ string $\ast$ List $\langle$ Route $\rangle$ & describes a full play with all needed information for the svg evaluator to draw it \\
+        (43, cover1)power[(x, post, 1), (y, corner, 2), (z, dig, 3)](iformation, (2x1)); & Play of Defense $\ast$ Formation $\ast$ Scheme $\ast$ Routes & (string $\ast$ string) $\ast$ (string $\ast$ (int $\ast$ int)) $\ast$ string $\ast$ List $\langle$ Route $\rangle$ & describes a full play with all needed information for the svg evaluator to draw it \\
+        \hline
+        ; & n/a & char & tells the parser that a play is done \\
         \hline
     \end{tabular}
     \caption{Semantics of data types.}

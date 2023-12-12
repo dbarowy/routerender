@@ -29,7 +29,7 @@ type Movement =
 | Dig
 | Hitch
 | Comeback
-| Wheel
+| Block
 | PostCorner
 | Fade
 | Screen
