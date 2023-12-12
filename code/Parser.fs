@@ -50,11 +50,8 @@ let movement =
     (pstr "corner" |>> (fun _ -> Corner)) <|>
     (pstr "curl" |>> (fun _ -> Curl)) <|>
     (pstr "dig" |>> (fun _ -> Dig)) <|>
-    (pstr "hitch" |>> (fun _ -> Hitch)) <|>
     (pstr "comeback" |>> (fun _ -> Comeback)) <|>
     (pstr "block" |>> (fun _ -> Block)) <|>
-    ((pstr "postcorner" <|> pstr "post-corner" <|> pstr "post corner") |>> (fun _ -> PostCorner)) <|>
-    (pstr "fade" |>> (fun _ -> Fade)) <|>
     (pstr "screen" |>> (fun _ -> Screen)) <!>
     "movement"
 

@@ -27,11 +27,8 @@ type Movement =
 | Corner
 | Curl
 | Dig
-| Hitch
 | Comeback
 | Block
-| PostCorner
-| Fade
 | Screen
 type Read =
 | First
