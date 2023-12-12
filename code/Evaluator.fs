@@ -27,9 +27,31 @@ let evalRoutes(routes: Routes) =
 
     let movements = extractMovements(routes)
     let reads = extractReads(routes)
-    ""
+    
+    (players,movements,reads)
 
-let evalFormation(unit: Unit, rs: Receivers) =
+let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
+
+    let playerToChar player = 
+      match player with
+      | X -> 'X'
+      | Y -> 'Y'
+      | Z -> 'Z'
+      | H -> 'H'
+      | A -> 'A'
+
+    let readToChar read = 
+      match read with
+      | First -> "1"
+      | Second -> "2"
+      | Third -> "3"
+      | Fourth -> "4"
+      | Fifth -> "5"
+    
+
+    let charsList = List.map playerToChar players
+
+
 
     let getRec(r: Receivers) = 
       match r with
@@ -50,10 +72,31 @@ let evalFormation(unit: Unit, rs: Receivers) =
             // Update cords here for routes 
             let Xval = 600 - 150 * (x+1)
             let mutable Yval = 425
+
+            let m = charsList|> List.findIndex (fun x -> x = pos)
+            let p = m |> (fun index -> (List.item index movements))
+            let r = m |> (fun index -> (List.item index reads))
+
+
+
             if x > 0 then
                 Yval <- 485
 
-            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawField(x + 1, c)
+            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n
+            <text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" 
+            +
+            match p with
+            | Go -> 
+              "<!--Go Route-->\n
+              <defs>\n
+               <marker id=\"arrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\">\n
+               <path d=\"M0,0 L0,6 L9,3 z\" fill=\"black\" />\n
+               </marker>\n
+             </defs>\n
+               <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30)+ "\" x2=\"" + string Xval + "\" y2=\"100\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\" />\n
+               <text x=\"" + string (Xval + 15) + "\" y=\"90\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | _ -> ""
+            + drawField(x + 1, c)
     let rec drawBoundary(x: int, c: int) = 
         if x = c then
             ""
@@ -197,7 +240,10 @@ let evalDefense (box: Box, cov: Coverage) =
     
 let evalPlay (play: Play) =
     match play with
-    | (a,b,c,d) -> evalDefense a + evalScheme b + evalRoutes c + evalFormation d
+    | (a,b,c,d) -> 
+      let players, routes, movements = evalRoutes c
+      let unit, Routes = d
+      evalDefense a + evalScheme b + evalFormation (unit, Routes, players, routes, movements)
 
 
 let eval (play: Play) : string =
