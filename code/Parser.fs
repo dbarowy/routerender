@@ -11,10 +11,7 @@ let pad p = pbetween pws0 p pws0
 let coverage = 
     (pstr "man" |>> (fun _ -> Man)) <|> 
     (pstr "cover1" |>> (fun _ -> Cover1)) <|>
-    (pstr "cover2" |>> (fun _ -> Cover2)) <|>
-    (pstr "cover3" |>> (fun _ -> Cover3)) <|>
-    (pstr "cover4" |>> (fun _ -> Cover4)) <|>
-    (pstr "cover6" |>> (fun _ -> Cover6)) <!>
+    (pstr "cover2" |>> (fun _ -> Cover2)) <!>
     "coverage"
 
 //Box
@@ -42,6 +39,7 @@ let read =
 
 //Movements
 let movement =
+    (pstr "run" |>> (fun _ -> Run)) <|>
     (pstr "go" |>> (fun _ -> Go)) <|>
     (pstr "slant" |>> (fun _ -> Slant)) <|>
     (pstr "out" |>> (fun _ -> Out)) <|>
@@ -113,9 +111,7 @@ let receivers = noReceivers <|> yesReceivers <!> "receivers"
 
 //Units
 let unit =
-    (pstr "iformation" |>> (fun _ -> IForm)) <|>
-    (pstr "empty" |>> (fun _ -> Empty)) <|>
-    (pstr "singleback" |>> (fun _ -> Singleback)) <|>
+    (pstr "under" |>> (fun _ -> Under)) <|>
     (pstr "shotgun" |>> (fun _ -> Shotgun)) <!>
     "unit"
 

@@ -7,9 +7,6 @@ type Coverage =
 | Man
 | Cover1
 | Cover2
-| Cover3
-| Cover4
-| Cover6
 type Defense = Box * Coverage
 
 type Player =
@@ -30,6 +27,7 @@ type Movement =
 | Comeback
 | Block
 | Screen
+| Run
 type Read =
 | First
 | Second
@@ -49,9 +47,7 @@ type Receivers =
 | NoReceivers
 | YesReceivers of char * char
 type Unit =
-| IForm
-| Empty
-| Singleback
+| Under
 | Shotgun
 type Formation = Unit * Receivers
 
