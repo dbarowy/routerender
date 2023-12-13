@@ -88,13 +88,47 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
             match p with
             | Go -> 
               "<!--Go Route-->\n
-              <defs>\n
-               <marker id=\"arrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\">\n
-               <path d=\"M0,0 L0,6 L9,3 z\" fill=\"black\" />\n
-               </marker>\n
-             </defs>\n
                <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30)+ "\" x2=\"" + string Xval + "\" y2=\"100\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\" />\n
                <text x=\"" + string (Xval + 15) + "\" y=\"90\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Slant -> 
+              "<!--Slant Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 75) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 75) + "\" x2=\"" + string (Xval + 210) + "\" y2=\"" + string (Yval - 155) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 215) + "\" y=\"" + string (Yval + - 155)+ "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Out ->
+              "<!--Out Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval - 100) + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 85) + "\" y=\"" + string(Yval - 265) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | In ->
+              "<!--In Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval + 100) + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 115) + "\" y=\"" + string(Yval - 265) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>"
+            | Corner ->
+              "<!--Corner Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval - 200) + "\" y2=\"" + string (Yval - 355) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 185) + "\" y=\"" + string (Yval - 365) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Post ->
+             "<!--Post Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval + 200) + "\" y2=\"" + string (Yval - 355) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 185) + "\" y=\"" + string (Yval - 365) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Curl ->
+             "<!--Curl Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval + 50) + "\" y2=\"" + string (Yval - 205) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 65) + "\" y=\"" + string (Yval - 215) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Comeback ->
+             "<!--Comeback Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval - 50) + "\" y2=\"" + string (Yval - 205) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 65) + "\" y=\"" + string (Yval - 215) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Block ->
+             "<!--WR Block-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2 =\"" + string Xval + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n
+              <line x1=\"" + string (Xval - 20) + "\" y1=\"" + string (Yval - 80) + "\" x2=\"" + string (Xval + 20) + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n"
             | _ -> ""
             + drawField(x + 1, c)
     let rec drawBoundary(x: int, c: int) = 
@@ -104,11 +138,65 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
             let pos = ['X'; 'H'; 'A'][x]
             let Xval = 930 + 150 * (x+1)
             let mutable Yval = 425
+
+            let m = charsList|> List.findIndex (fun x -> x = pos)
+            let p = m |> (fun index -> (List.item index movements))
+            let r = m |> (fun index -> (List.item index reads))
+
+
+
             if x > 0 then
                 Yval <- 485
 
-            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n<text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" + drawBoundary(x + 1, c)
-    
+            "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+            <text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n"
+            +
+            match p with
+            | Go -> 
+              "<!--Go Route-->\n
+               <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30)+ "\" x2=\"" + string Xval + "\" y2=\"100\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\" />\n
+               <text x=\"" + string (Xval + 15) + "\" y=\"90\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Slant -> 
+              "<!--Slant Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 75) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 75) + "\" x2=\"" + string (Xval + 210) + "\" y2=\"" + string (Yval - 155) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 215) + "\" y=\"" + string (Yval + - 155)+ "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | In ->
+              "<!--In Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval - 100) + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 85) + "\" y=\"" + string(Yval - 265) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Out ->
+              "<!--Out Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval + 100) + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 115) + "\" y=\"" + string(Yval - 265) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>"
+            | Post ->
+              "<!--Post Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval - 200) + "\" y2=\"" + string (Yval - 355) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 185) + "\" y=\"" + string (Yval - 365) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Corner ->
+             "<!--Corner Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval + 200) + "\" y2=\"" + string (Yval - 355) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 185) + "\" y=\"" + string (Yval - 365) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Comeback ->
+             "<!--Comeback Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval + 50) + "\" y2=\"" + string (Yval - 205) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 65) + "\" y=\"" + string (Yval - 215) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Curl ->
+             "<!--Curl Route-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 255) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 255) + "\" x2=\"" + string (Xval - 50) + "\" y2=\"" + string (Yval - 205) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 65) + "\" y=\"" + string (Yval - 215) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
+            | Block ->
+             "<!--WR Block-->\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2 =\"" + string Xval + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n
+              <line x1=\"" + string (Xval - 20) + "\" y1=\"" + string (Yval - 80) + "\" x2=\"" + string (Xval + 20) + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n"
+            | _ -> ""
+            + drawField(x + 1, c)
     drawField fieldTup + drawBoundary boundaryTup
 
 let evalScheme(schm: Scheme) =
@@ -249,7 +337,8 @@ let evalPlay (play: Play) =
 let eval (play: Play) : string =
     let csz = CANVAS_SZ |> string
 
-    let OLine ="<circle cx=\"530\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+    let OLine ="<!--OLine-->\n
+  <circle cx=\"530\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <circle cx=\"610\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <rect x=\"660\" y=\"395\" width=\"60\" height=\"60\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
   <circle cx=\"770\" cy=\"425\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
@@ -258,9 +347,14 @@ let eval (play: Play) : string =
     
     "<svg width=\"" + csz + "\" height=\"" + csz + "\"" +
     " xmlns=\"http://www.w3.org/2000/svg\"" +
-    " xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n" +
+    " xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n
+    <defs>\n
+      <marker id=\"arrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\">\n
+        <path d=\"M0,0 L0,6 L9,3 z\" fill=\"black\" />\n
+      </marker>\n
+    </defs>\n"
 
-    OLine +
+    + OLine 
 
-    (evalPlay play)
+    + (evalPlay play)
     + "</svg>\n"
