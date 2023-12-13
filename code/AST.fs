@@ -4,7 +4,6 @@ type Box =
 | ThreeFour
 | FourThree
 type Coverage =
-| Man
 | Cover1
 | Cover2
 type Defense = Box * Coverage

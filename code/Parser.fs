@@ -9,7 +9,6 @@ let pad p = pbetween pws0 p pws0
 
 // Coverages
 let coverage = 
-    (pstr "man" |>> (fun _ -> Man)) <|> 
     (pstr "cover1" |>> (fun _ -> Cover1)) <|>
     (pstr "cover2" |>> (fun _ -> Cover2)) <!>
     "coverage"

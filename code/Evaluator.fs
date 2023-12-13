@@ -390,7 +390,7 @@ let evalDefense (box: Box, cov: Coverage) =
     | FourThree, Cover1-> four_three + cover_1
     | ThreeFour, Cover2 -> three_four + cover_2
     | ThreeFour, Cover1-> three_four + cover_1
-    | _, Man -> ""   
+     
 let evalPlay (play: Play) =
     match play with
     | (a,b,c,d) -> 

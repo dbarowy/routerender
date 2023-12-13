@@ -14,5 +14,5 @@ let main args =
         File.WriteAllText (fullPath, svg)
         0
     | None ->
-        printfn "Invalid program."
+        printfn "Invalid program. Usage: (43, cover2)power[(x,curl,1), (y,comeback,2),(z,slant,3)](shotgun, 1x2);"
         1
