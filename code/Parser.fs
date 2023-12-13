@@ -47,7 +47,6 @@ let movement =
     (pstr "post" |>> (fun _ -> Post)) <|>
     (pstr "corner" |>> (fun _ -> Corner)) <|>
     (pstr "curl" |>> (fun _ -> Curl)) <|>
-    (pstr "dig" |>> (fun _ -> Dig)) <|>
     (pstr "comeback" |>> (fun _ -> Comeback)) <|>
     (pstr "block" |>> (fun _ -> Block)) <|>
     (pstr "screen" |>> (fun _ -> Screen)) <!>
@@ -92,6 +91,7 @@ let routes: Parser<Routes> =
 
 //Schemes
 let scheme = 
+    (pad (pstr "pass") |>> (fun _ -> Pass)) <|>
     (pad (pstr "power") |>> (fun _ -> Power)) <|>
     (pad (pstr "counter") |>> (fun _ -> Counter)) <|>
     (pad (pstr "inside zone" <|> pstr "insidezone" <|> pstr "insideZone" <|> pstr "iz" <|> pstr "IZ") |>> (fun _ -> InsideZone)) <|>

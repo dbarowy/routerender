@@ -23,7 +23,6 @@ type Movement =
 | Post
 | Corner
 | Curl
-| Dig
 | Comeback
 | Block
 | Screen
@@ -42,6 +41,7 @@ type Scheme =
 | Counter
 | InsideZone
 | OutsideZone
+| Pass
 
 type Receivers =
 | NoReceivers

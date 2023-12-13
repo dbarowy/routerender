@@ -62,6 +62,8 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
 
     let fieldTup = (0, field)
     let boundaryTup = (0, boundary)
+
+    printfn "%A" boundaryTup
  
     let rec drawField(x: int, c: int) = 
         if x = c then
@@ -129,9 +131,14 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
              "<!--WR Block-->\n
               <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2 =\"" + string Xval + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n
               <line x1=\"" + string (Xval - 20) + "\" y1=\"" + string (Yval - 80) + "\" x2=\"" + string (Xval + 20) + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n"
+            | Screen ->
+              "<!--WR Screen-->
+              <path d=\"M" + string Xval + "," + string (Yval + 30) + " Q" + string (Xval + 50) + "," + string (Yval + 90) + " " + string (Xval + 100) + "," + string (Yval + 100) + "\" stroke=\"black\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval + 115) + "\" y=\"" + string (Yval + 90) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
             | _ -> ""
             + drawField(x + 1, c)
     let rec drawBoundary(x: int, c: int) = 
+        printfn "%d" x
         if x = c then
             ""
         else
@@ -143,10 +150,12 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
             let p = m |> (fun index -> (List.item index movements))
             let r = m |> (fun index -> (List.item index reads))
 
-
+            printfn "%s" (string pos)
 
             if x > 0 then
                 Yval <- 485
+
+            
 
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
             <text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n"
@@ -159,7 +168,7 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
             | Slant -> 
               "<!--Slant Route-->\n
               <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2=\"" + string Xval + "\" y2=\"" + string (Yval - 75) + "\" stroke=\"black\" stroke-width=\"2\"/>\n
-              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 75) + "\" x2=\"" + string (Xval + 210) + "\" y2=\"" + string (Yval - 155) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
+              <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 75) + "\" x2=\"" + string (Xval - 210) + "\" y2=\"" + string (Yval - 155) + "\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n
               <text x=\"" + string (Xval - 215) + "\" y=\"" + string (Yval + - 155)+ "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
             | In ->
               "<!--In Route-->\n
@@ -195,15 +204,52 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
              "<!--WR Block-->\n
               <line x1=\"" + string Xval + "\" y1=\"" + string (Yval - 30) + "\" x2 =\"" + string Xval + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n
               <line x1=\"" + string (Xval - 20) + "\" y1=\"" + string (Yval - 80) + "\" x2=\"" + string (Xval + 20) + "\" y2=\"" + string (Yval - 80) + "\" stroke=\"black\" stroke-width=\"3\"/>\n"
+            | Screen ->
+             "<!--WR Screen-->
+              <path d=\"M" + string Xval + "," + string (Yval + 30) + " Q" + string (Xval - 50) + "," + string (Yval + 90) + " " + string (Xval - 100) + "," + string (Yval + 100) + "\" stroke=\"black\" fill=\"none\" marker-end=\"url(#arrow)\"/>\n
+              <text x=\"" + string (Xval - 115) + "\" y=\"" + string (Yval + 90) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
             | _ -> ""
-            + drawField(x + 1, c)
-    drawField fieldTup + drawBoundary boundaryTup
+            + drawBoundary(x + 1, c)
 
-let evalScheme(schm: Scheme) =
+    let drawFormation (unit) =
+      let mutable run = false
+      if List.contains 'A' charsList then
+        let m = charsList|> List.findIndex (fun x -> x = 'A')
+        let p = m |> (fun index -> (List.item index movements))
+        run <- if p = Run then true else false
+
+      match unit, run with
+      
+      | Shotgun, false -> 
+        "<!--Shotgun Formation-->\n
+        <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
+        <circle cx=\"770\" cy=\"615\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+        <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
+      | Under, false -> 
+        "<!--Under Formation-->\n
+        <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
+        <circle cx=\"690\" cy=\"660\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+        <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
+      | Shotgun, true -> 
+        "<!--Shotgun Run Formation-->\n
+        <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
+        <circle cx=\"770\" cy=\"615\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+        <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
+        <line x1=\"770\" y1=\"585\" x2=\"715\" y2=\"575\" stroke=\"black\" stroke-width=\"2\"/>\n
+        <path d=\"M715,575 Q705,560 730,520\" stroke=\"black\" fill=\"none\" marker-end=\"url(#arrow)\" stroke-width=\"2\"/>\n"
+      | Under, true ->
+        "<!--Under Formation-->\n
+        <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
+        <circle cx=\"690\" cy=\"660\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+        <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
+        <line x1=\"690\" y1=\"630\" x2=\"740\" y2=\"520\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n"
+    drawFormation unit + drawField fieldTup + drawBoundary boundaryTup 
+
+let evalScheme(front: Box, schm: Scheme) =
     let pwr34 = "<!--Power Scheme against 3-4 Defense-->\n
     <!--Labeling Keys-->\n
-    <text x=\"417\" y=\"285\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
-    <text x=\"597\" y=\"235\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+    <text x=\"417\" y=\"275\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+    <text x=\"597\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
     <!--Gap Hinge-->\n
     <line x1=\"530\" y1=\"395\" x2=\"580\" y2=\"395\" stroke=\"black\" stroke-width=\"3\"/>\n
     <line x1=\"580\" y1=\"395\" x2=\"530\" y2=\"485\" stroke=\"black\" stroke-width=\"3\"/>\n
@@ -225,7 +271,7 @@ let evalScheme(schm: Scheme) =
 
     let pwr43 = "<!--Power Scheme against 4-3 Defense-->\n
 <!--Labeling Keys-->\n
-<text x=\"555\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+<text x=\"555\" y=\"215\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
 <!--Block F-->\n
 <line x1=\"530\" y1=\"395\" x2=\"500\" y2=\"375\" stroke=\"black\" stroke-width=\"3\"/>\n
 <line x1=\"490\" y1=\"390\" x2=\"510\" y2=\"360\" stroke=\"black\" stroke-width=\"3\"/>\n
@@ -249,8 +295,8 @@ let evalScheme(schm: Scheme) =
 
     let ctr34 = "<!--Counter Scheme against 3-4 Defense-->\n
     <!--Labeling Keys-->\n
-    <text x=\"417\" y=\"285\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
-    <text x=\"597\" y=\"235\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+    <text x=\"417\" y=\"275\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+    <text x=\"597\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
     <!--Pull for -1-->\n
     <line x1=\"530\" y1=\"455\" x2=\"545\" y2=\"495\" stroke=\"black\" stroke-width=\"3\"/>\n
     <line x1=\"545\" y1=\"495\" x2=\"790\" y2=\"495\" stroke=\"black\" stroke-width=\"3\"/>\n
@@ -272,7 +318,7 @@ let evalScheme(schm: Scheme) =
 
     let ctr43 = "<!--Counter Scheme against 4-3 Defense-->\n
   <!--Labeling Keys-->\n
-  <text x=\"555\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+  <text x=\"555\" y=\"215\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
   <!--Pull for -1-->\n
   <line x1=\"530\" y1=\"455\" x2=\"545\" y2=\"495\" stroke=\"black\" stroke-width=\"3\"/>\n
   <line x1=\"545\" y1=\"495\" x2=\"790\" y2=\"495\" stroke=\"black\" stroke-width=\"3\"/>\n
@@ -293,45 +339,65 @@ let evalScheme(schm: Scheme) =
   <!--B to K-->\n
   <line x1=\"850\" y1=\"395\" x2=\"800\" y2=\"375\" stroke=\"black\" stroke-width=\"3\"/>\n
   <line x1=\"795\" y1=\"390\" x2=\"805\" y2=\"360\" stroke=\"black\" stroke-width=\"3\"/>\n"
+      
 
 
-    match schm with
-    | Power -> pwr34
-    | Counter -> ctr34
-    | _ -> ""
+    printfn "%A" schm
+    match front, schm with
+    | ThreeFour, Power -> pwr34
+    | ThreeFour, Counter -> ctr34
+    | FourThree, Power -> pwr43
+    | FourThree, Counter -> ctr43
+    | ThreeFour, InsideZone -> ""
+    | ThreeFour, OutsideZone -> ""
+    | FourThree, InsideZone -> ""
+    | FourThree, OutsideZone -> ""
+    | _, Pass -> ""
 
 let evalDefense (box: Box, cov: Coverage) =
 
-    let three_four = "<text x=\"510\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">F</text>\n
-    <text x=\"670\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">N</text>\n
-    <text x=\"830\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">R</text>\n
-    <text x=\"590\" y=\"285\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">B</text>\n
-    <text x=\"750\" y=\"285\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">M</text>\n
-    <text x=\"400\" y=\"335\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">W</text>\n
-    <text x=\"940\" y=\"335\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n"
+    let three_four = "<!--Three Four Box-->
+    <text x=\"510\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">F</text>\n
+    <text x=\"670\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">N</text>\n
+    <text x=\"830\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">R</text>\n
+    <text x=\"590\" y=\"275\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">B</text>\n
+    <text x=\"750\" y=\"275\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">M</text>\n
+    <text x=\"400\" y=\"325\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">W</text>\n
+    <text x=\"940\" y=\"325\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n"
     
-    let four_three = "<text x=\"480\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">F</text>\n
-    <text x=\"590\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">E</text>\n
-    <text x=\"750\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">N</text>\n
-    <text x=\"870\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">R</text>\n
-    <text x=\"670\" y=\"285\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">M</text>\n
-    <text x=\"800\" y=\"285\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
-    <text x=\"540\" y=\"285\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">W</text>\n"
+    let four_three = "<!--Four Three Box-->
+    <text x=\"480\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">F</text>\n
+    <text x=\"590\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">E</text>\n
+    <text x=\"750\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">N</text>\n
+    <text x=\"870\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">R</text>\n
+    <text x=\"670\" y=\"275\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">M</text>\n
+    <text x=\"800\" y=\"275\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
+    <text x=\"540\" y=\"275\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">W</text>\n"
 
-    let cover_2 = "<text x=\"380\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
-  <text x=\"970\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
-  <text x=\"150\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
-  <text x=\"1190\" y=\"385\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
+    let cover_2 = "<!--Cover 2-->
+    <text x=\"370\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
+    <text x=\"970\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
+    <text x=\"150\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
+    <text x=\"1190\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
+    let cover_1 = "<!--Cover 1-->\n
+    <text x=\"460\" y=\"250\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
+    <text x=\"590\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
+    <text x=\"150\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
+    <text x=\"1190\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
+
     match box, cov with
     | FourThree, Cover2 -> four_three + cover_2
-    | _, _-> three_four + cover_2
-    
+    | FourThree, Cover1-> four_three + cover_1
+    | ThreeFour, Cover2 -> three_four + cover_2
+    | ThreeFour, Cover1-> three_four + cover_1
+    | _, Man -> ""   
 let evalPlay (play: Play) =
     match play with
     | (a,b,c,d) -> 
       let players, routes, movements = evalRoutes c
       let unit, Routes = d
-      evalDefense a + evalScheme b + evalFormation (unit, Routes, players, routes, movements)
+      let front = fst a
+      evalDefense a + evalScheme (front, b) + evalFormation (unit, Routes, players, routes, movements)
 
 
 let eval (play: Play) : string =
