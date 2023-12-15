@@ -1,4 +1,6 @@
-﻿open Evaluator
+﻿// Tim Forth & Eric Gage c. 2023
+
+open Evaluator
 open System.IO
 open Parser
 

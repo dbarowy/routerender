@@ -1,37 +1,53 @@
+// Tim Forth & Eric Gage c. 2023
+
 module Evaluator
 
 open Parser
 open AST
+(*
+  Interprets and extracts the Routes input
 
+  Returns: 3-tuple of the (players,movements,reads)
+*)
 let evalRoutes(routes: Routes) = 
+    
+    // creates a list of the players in the passing formation
     let rec extractPlayers(routes: Routes) = 
       let position_list= []
       match routes with
       | [] -> position_list
       | (p, _, _)::ls -> p::position_list @ extractPlayers(ls)
-
+    
+    // creates a list of the routes each player is running
     let rec extractMovements(routes: Routes) =
       let movement_list = []
       match routes with
       | [] -> movement_list
       | (_,m,_)::ls -> m::movement_list @ extractMovements(ls)
 
+    // creates a list of the quarterbacks read for each route
     let rec extractReads(routes: Routes) =
       let read_list = []
       match routes with
       | [] -> read_list
       | (_,_,r)::ls -> r::read_list @ extractReads(ls)
 
+    // extracts the Routes input into lists
     let players = extractPlayers(routes)
-    
-
     let movements = extractMovements(routes)
     let reads = extractReads(routes)
     
+    // returns the Routes input in list format
     (players,movements,reads)
 
+(*
+  Draws the offensive skill side of the ball
+
+  Returns: string of svg code
+*)
 let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
 
+    // returns the char of the Player
     let playerToChar player = 
       match player with
       | X -> 'X'
@@ -40,6 +56,7 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
       | H -> 'H'
       | A -> 'A'
 
+    // returns the string representation of the read
     let readToChar read = 
       match read with
       | First -> "1"
@@ -48,45 +65,49 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
       | Fourth -> "4"
       | Fifth -> "5"
     
-
+    // list of all the inputted receivers
     let charsList = List.map playerToChar players
 
-
-
+    // returns the number of receivers and on the field and boundry side of the field
     let getRec(r: Receivers) = 
       match r with
       | YesReceivers(fld: char, bnd: char) -> (int fld - int('0'), int bnd - int('0')) 
       | NoReceivers -> (0,0)
   
+    // field, boundry = number x number
     let field, boundary = getRec(rs)
 
+    // creates a tuple for ascending recursion 
     let fieldTup = (0, field)
     let boundaryTup = (0, boundary)
-
-    printfn "%A" boundaryTup
  
+    // draws the routes for each receiver on the field side
     let rec drawField(x: int, c: int) = 
         if x = c then
             ""
         else
-            // need better way to extract position from Routes list 
+            // the position of which route will be drawn 
             let pos = ['Y';'Z';'A'][x]
-            // Update cords here for routes 
+            
+            // update the coordinates for each receiver 
             let Xval = 600 - 150 * (x+1)
             let mutable Yval = 425
 
+            // vars holding the movement and read
             let m = charsList|> List.findIndex (fun x -> x = pos)
             let p = m |> (fun index -> (List.item index movements))
             let r = m |> (fun index -> (List.item index reads))
 
+            
+            // TE (Y) on the line of scrimmage all other receivers off the line 
+            if x > 0 then Yval <- 485
 
-
-            if x > 0 then
-                Yval <- 485
-
+            // draws the receiver
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/> \n
             <text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n" 
             +
+
+            // draws the route and read
             match p with
             | Go -> 
               "<!--Go Route-->\n
@@ -137,29 +158,41 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
               <text x=\"" + string (Xval + 115) + "\" y=\"" + string (Yval + 90) + "\" stroke=\"black\" font-family=\"Arial, Helvetica, sans-serif\">" + readToChar r + "</text>\n"
             | _ -> ""
             + drawField(x + 1, c)
+
+    // var holding whether or not the RB (A) is lined up as a receiver
+    let mutable aRec = false
+    
+    // draws the routes for each receiver on the boundry side
     let rec drawBoundary(x: int, c: int) = 
-        printfn "%d" x
+     
         if x = c then
             ""
         else
+            // the position of which route will be drawn
             let pos = ['X'; 'H'; 'A'][x]
+
+            // update the coordinates for each receiver 
             let Xval = 930 + 150 * (x+1)
             let mutable Yval = 425
 
+            // updates aRec if the RB (A) is lined up in the receiver position
+            if pos = 'A' then aRec <- true
+
+            // vars holding the movement and read
             let m = charsList|> List.findIndex (fun x -> x = pos)
             let p = m |> (fun index -> (List.item index movements))
             let r = m |> (fun index -> (List.item index reads))
-
-            printfn "%s" (string pos)
-
+    
+            // X on the line of scrimmage all other receivers off the line
             if x > 0 then
                 Yval <- 485
 
-            
-
+            // draws the receiver
             "<circle cx=\"" + string Xval + "\" cy=\"" + string Yval + "\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
             <text x=\"" + string (Xval - 13) + "\" y=\"" + string (Yval + 15) + "\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">" + string pos + "</text>\n"
             +
+
+            // draws the route and read
             match p with
             | Go -> 
               "<!--Go Route-->\n
@@ -211,40 +244,73 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
             | _ -> ""
             + drawBoundary(x + 1, c)
 
+    // draws the backfield
     let drawFormation (unit) =
+
+      // var that holds whether or not the RB will run the ball or block
       let mutable run = false
+
+      // updates run
       if List.contains 'A' charsList then
         let m = charsList|> List.findIndex (fun x -> x = 'A')
         let p = m |> (fun index -> (List.item index movements))
         run <- if p = Run then true else false
 
-      match unit, run with
-      
-      | Shotgun, false -> 
+
+      // the RB cannot be lined up in the backfield and receiver position
+      //          -> this cannot happen with the parser, but is included due to the
+      //             incomplete pattern matching below
+      if run = true && aRec = true then printfn "Usage Error: A cannot run the ball and go out for a pass"
+
+      // draws the backfield 
+      match unit, run, aRec with
+      | Shotgun, false, false -> 
         "<!--Shotgun Formation-->\n
         <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
         <circle cx=\"770\" cy=\"615\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
-        <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
-      | Under, false -> 
+        <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
+        <!--RB Block-->\n
+        <line x1=\"770\" y1=\"585\" x2 =\"770\" y2=\"505\" stroke=\"black\" stroke-width=\"3\"/>\n
+        <line x1=\"750\" y1=\"505\" x2=\"790\" y2=\"505\" stroke=\"black\" stroke-width=\"3\"/>\n"
+      | Under, false, false -> 
         "<!--Under Formation-->\n
         <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
         <circle cx=\"690\" cy=\"660\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
-        <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
-      | Shotgun, true -> 
+        <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
+        <!--RB Block-->\n
+        <line x1=\"690\" y1=\"630\" x2 =\"580\" y2=\"505\" stroke=\"black\" stroke-width=\"3\"/>\n
+        <line x1=\"560\" y1=\"505\" x2=\"600\" y2=\"505\" stroke=\"black\" stroke-width=\"3\"/>\n"
+      | Shotgun, true, false -> 
         "<!--Shotgun Run Formation-->\n
         <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
         <circle cx=\"770\" cy=\"615\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
         <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
         <line x1=\"770\" y1=\"585\" x2=\"715\" y2=\"575\" stroke=\"black\" stroke-width=\"2\"/>\n
         <path d=\"M715,575 Q705,560 730,520\" stroke=\"black\" fill=\"none\" marker-end=\"url(#arrow)\" stroke-width=\"2\"/>\n"
-      | Under, true ->
+      | Under, true, false ->
         "<!--Under Formation-->\n
         <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
         <circle cx=\"690\" cy=\"660\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
         <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
         <line x1=\"690\" y1=\"630\" x2=\"740\" y2=\"520\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n"
-    drawFormation unit + drawField fieldTup + drawBoundary boundaryTup 
+      | Shotgun, false, true -> "<!--Shotgun Formation-->\n
+        <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
+        <circle cx=\"770\" cy=\"615\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+        <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
+      | Under, false, true -> "<!--Under Formation-->\n
+        <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
+        <circle cx=\"690\" cy=\"660\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
+        <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
+      | _, _, _ -> 
+        "<!--Error in Input: A cannot run the ball and -->"
 
+    drawField fieldTup + drawBoundary boundaryTup + drawFormation unit
+
+(*
+  Draws the offensive line assignments
+
+  Returns: string of svg code
+*)
 let evalScheme(front: Box, schm: Scheme) =
     let pwr34 = "<!--Power Scheme against 3-4 Defense-->\n
     <!--Labeling Keys-->\n
@@ -341,19 +407,93 @@ let evalScheme(front: Box, schm: Scheme) =
   <line x1=\"795\" y1=\"390\" x2=\"805\" y2=\"360\" stroke=\"black\" stroke-width=\"3\"/>\n"
       
 
+    let iz34 = "<!--Inside Zone against 3-4 Defense-->\n
+<!--Labeling Keys-->\n
+<text x=\"948\" y=\"275\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+<text x=\"763\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+<!--C to -1-->\n
+<line x1=\"530\" y1=\"395\" x2=\"530\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"510\" y1=\"380\" x2=\"550\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"550\" y1=\"330\" x2=\"580\" y2=\"280\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"575\" y1=\"265\" x2=\"590\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
+<!--Single to BSK-->\n
+<line x1=\"610\" y1=\"395\" x2=\"650\" y2=\"370\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"645\" y1=\"355\" x2=\"655\" y2=\"385\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"690\" y1=\"395\" x2=\"690\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"670\" y1=\"380\" x2=\"710\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"710\" y1=\"330\" x2=\"750\" y2=\"285\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"740\" y1=\"275\" x2=\"760\" y2=\"295\" stroke=\"black\" stroke-width=\"3\"/>\n
+<!--Double to PSK-->\n
+<line x1=\"770\" y1=\"395\" x2=\"810\" y2=\"375\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"800\" y1=\"355\" x2=\"820\" y2=\"390\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"850\" y1=\"395\" x2=\"850\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"830\" y1=\"380\" x2=\"870\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"870\" y1=\"330\" x2=\"930\" y2=\"320\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"925\" y1=\"300\" x2=\"935\" y2=\"340\" stroke=\"black\" stroke-width=\"3\"/>\n"
 
-    printfn "%A" schm
+    let oz34 = "<!--Outside Zone against 3-4 Defense-->\n
+<!--Labeling Keys-->\n
+<text x=\"597\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+<text x=\"763\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+<!--C to -1-->\n
+<line x1=\"530\" y1=\"395\" x2=\"530\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"510\" y1=\"380\" x2=\"550\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"530\" y1=\"320\" x2=\"530\" y2=\"290\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"510\" y1=\"290\" x2=\"550\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
+<!--Single to BSK-->\n
+<line x1=\"610\" y1=\"395\" x2=\"650\" y2=\"370\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"645\" y1=\"355\" x2=\"655\" y2=\"385\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"690\" y1=\"395\" x2=\"690\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"670\" y1=\"380\" x2=\"710\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"690\" y1=\"320\" x2=\"690\" y2=\"290\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"670\" y1=\"290\" x2=\"710\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
+<!--Double to PSK-->\n
+<line x1=\"770\" y1=\"395\" x2=\"810\" y2=\"375\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"800\" y1=\"355\" x2=\"820\" y2=\"390\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"850\" y1=\"395\" x2=\"850\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"830\" y1=\"380\" x2=\"870\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"850\" y1=\"320\" x2=\"850\" y2=\"290\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"830\" y1=\"290\" x2=\"870\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
+"
+    //iz and oz against a 43 are the same
+    let oz43 ="<!--Outside Zone against 4-3 Defense-->\n
+<!--Labeling Keys-->\n
+<text x=\"683\" y=\"225\" font-size=\"30\" stroke=\"red\" font-family=\"Arial, Helvetica, sans-serif\">K</text>\n
+<!--B to -1-->\n
+<line x1=\"530\" y1=\"395\" x2=\"570\" y2=\"370\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"565\" y1=\"355\" x2=\"575\" y2=\"385\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"610\" y1=\"395\" x2=\"610\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"590\" y1=\"380\" x2=\"630\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"610\" y1=\"320\" x2=\"610\" y2=\"290\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"590\" y1=\"290\" x2=\"630\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
+<!--A to K-->\n
+<line x1=\"770\" y1=\"395\" x2=\"770\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"750\" y1=\"380\" x2=\"790\" y2=\"380\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"690\" y1=\"395\" x2=\"730\" y2=\"370\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"720\" y1=\"355\" x2=\"740\" y2=\"390\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"770\" y1=\"320\" x2=\"770\" y2=\"290\" stroke=\"black\" stroke-dasharray=\"4\" stroke-width=\"3\"/>\n
+<line x1=\"750\" y1=\"290\" x2=\"790\" y2=\"290\" stroke=\"black\" stroke-width=\"3\"/>\n
+<!--Solo on R-->\n
+<line x1=\"850\" y1=\"395\" x2=\"865\" y2=\"370\" stroke=\"black\" stroke-width=\"3\"/>\n
+<line x1=\"855\" y1=\"355\" x2=\"875\" y2=\"390\" stroke=\"black\" stroke-width=\"3\"/>\n
+"
+    // draws the right scheme for the right front
     match front, schm with
     | ThreeFour, Power -> pwr34
     | ThreeFour, Counter -> ctr34
     | FourThree, Power -> pwr43
     | FourThree, Counter -> ctr43
-    | ThreeFour, InsideZone -> ""
-    | ThreeFour, OutsideZone -> ""
-    | FourThree, InsideZone -> ""
-    | FourThree, OutsideZone -> ""
+    | ThreeFour, InsideZone -> iz34
+    | ThreeFour, OutsideZone -> oz34
+    | FourThree, InsideZone -> oz43
+    | FourThree, OutsideZone -> oz43
     | _, Pass -> ""
 
+(*
+  Draws the offensive line assignments
+
+  Returns: string of svg code
+*)
 let evalDefense (box: Box, cov: Coverage) =
 
     let three_four = "<!--Three Four Box-->
@@ -385,12 +525,18 @@ let evalDefense (box: Box, cov: Coverage) =
     <text x=\"150\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
     <text x=\"1190\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
 
+    // draws the right box and coverage
     match box, cov with
     | FourThree, Cover2 -> four_three + cover_2
     | FourThree, Cover1-> four_three + cover_1
     | ThreeFour, Cover2 -> three_four + cover_2
     | ThreeFour, Cover1-> three_four + cover_1
      
+(*
+  Evaluates the play input 
+
+  Returns: string of svg code
+*)
 let evalPlay (play: Play) =
     match play with
     | (a,b,c,d) -> 
@@ -399,7 +545,11 @@ let evalPlay (play: Play) =
       let front = fst a
       evalDefense a + evalScheme (front, b) + evalFormation (unit, Routes, players, routes, movements)
 
+(*
+  Combines the entire play
 
+  Returns: string of svg code
+*)
 let eval (play: Play) : string =
     let csz = CANVAS_SZ |> string
 
