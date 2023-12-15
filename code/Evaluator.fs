@@ -262,6 +262,7 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
       //             incomplete pattern matching below
       if run = true && aRec = true then printfn "Usage Error: A cannot run the ball and go out for a pass"
 
+      printfn "%b" aRec
       // draws the backfield 
       match unit, run, aRec with
       | Shotgun, false, false -> 
@@ -294,13 +295,9 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
         <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n
         <line x1=\"690\" y1=\"630\" x2=\"740\" y2=\"520\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n"
       | Shotgun, false, true -> "<!--Shotgun Formation-->\n
-        <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
-        <circle cx=\"770\" cy=\"615\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
-        <text x=\"757\" y=\"630\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
+        <text x=\"668\" y=\"635\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n"
       | Under, false, true -> "<!--Under Formation-->\n
-        <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n
-        <circle cx=\"690\" cy=\"660\" r=\"30\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/>\n
-        <text x=\"677\" y=\"675\" font-size=\"45\" font-family=\"Arial, Helvetica, sans-serif\">A</text>\n"
+        <text x=\"668\" y=\"510\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">Q</text>\n"
       | _, _, _ -> 
         "<!--Error in Input: A cannot run the ball and -->"
 
