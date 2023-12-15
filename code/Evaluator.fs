@@ -262,7 +262,6 @@ let evalFormation(unit: Unit, rs: Receivers,players,movements,reads) =
       //             incomplete pattern matching below
       if run = true && aRec = true then printfn "Usage Error: A cannot run the ball and go out for a pass"
 
-      printfn "%b" aRec
       // draws the backfield 
       match unit, run, aRec with
       | Shotgun, false, false -> 
