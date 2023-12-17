@@ -511,12 +511,12 @@ let evalDefense (box: Box, cov: Coverage) =
     <text x=\"540\" y=\"275\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">W</text>\n"
 
     let cover_2 = "<!--Cover 2-->
-    <text x=\"370\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
+    <text x=\"370\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">SS</text>\n
     <text x=\"970\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
     <text x=\"150\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
     <text x=\"1190\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
     let cover_1 = "<!--Cover 1-->\n
-    <text x=\"460\" y=\"250\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">S</text>\n
+    <text x=\"460\" y=\"250\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">SS</text>\n
     <text x=\"590\" y=\"100\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">FS</text>\n
     <text x=\"150\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n
     <text x=\"1190\" y=\"375\" font-size=\"60\" font-family=\"Arial, Helvetica, sans-serif\">C</text>\n"
