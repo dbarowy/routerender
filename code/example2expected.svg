@@ -1,0 +1,86 @@
+<svg width="1500" height="1500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <defs>
+
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+
+        <path d="M0,0 L0,6 L9,3 z" fill="black" />
+
+      </marker>
+
+    </defs>
+<!--OLine-->
+
+  <circle cx="530" cy="425" r="30" stroke="black" stroke-width="3" fill="none"/>
+
+  <circle cx="610" cy="425" r="30" stroke="black" stroke-width="3" fill="none"/>
+
+  <rect x="660" y="395" width="60" height="60" stroke="black" stroke-width="3" fill="none"/>
+
+  <circle cx="770" cy="425" r="30" stroke="black" stroke-width="3" fill="none"/>
+
+  <circle cx="850" cy="425" r="30" stroke="black" stroke-width="3" fill="none"/>
+<!--Three Four Box-->
+    <text x="510" y="375" font-size="60" font-family="Arial, Helvetica, sans-serif">F</text>
+
+    <text x="670" y="375" font-size="60" font-family="Arial, Helvetica, sans-serif">N</text>
+
+    <text x="830" y="375" font-size="60" font-family="Arial, Helvetica, sans-serif">R</text>
+
+    <text x="590" y="275" font-size="60" font-family="Arial, Helvetica, sans-serif">B</text>
+
+    <text x="750" y="275" font-size="60" font-family="Arial, Helvetica, sans-serif">M</text>
+
+    <text x="400" y="325" font-size="60" font-family="Arial, Helvetica, sans-serif">W</text>
+
+    <text x="940" y="325" font-size="60" font-family="Arial, Helvetica, sans-serif">S</text>
+<!--Cover 2-->
+    <text x="370" y="100" font-size="60" font-family="Arial, Helvetica, sans-serif">SS</text>
+
+    <text x="970" y="100" font-size="60" font-family="Arial, Helvetica, sans-serif">FS</text>
+
+    <text x="150" y="375" font-size="60" font-family="Arial, Helvetica, sans-serif">C</text>
+
+    <text x="1190" y="375" font-size="60" font-family="Arial, Helvetica, sans-serif">C</text>
+<circle cx="450" cy="425" r="30" stroke="black" stroke-width="3" fill="none"/> 
+
+            <text x="437" y="440" font-size="45" font-family="Arial, Helvetica, sans-serif">Y</text>
+<!--In Route-->
+
+              <line x1="450" y1="395" x2="450" y2="170" stroke="black" stroke-width="2"/>
+
+              <line x1="450" y1="170" x2="550" y2="170" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+
+              <text x="565" y="160" stroke="black" font-family="Arial, Helvetica, sans-serif">2</text><circle cx="300" cy="485" r="30" stroke="black" stroke-width="3" fill="none"/> 
+
+            <text x="287" y="500" font-size="45" font-family="Arial, Helvetica, sans-serif">Z</text>
+<!--Post Route-->
+
+              <line x1="300" y1="455" x2="300" y2="230" stroke="black" stroke-width="2"/>
+
+              <line x1="300" y1="230" x2="500" y2="130" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+
+              <text x="485" y="120" stroke="black" font-family="Arial, Helvetica, sans-serif">3</text>
+<circle cx="1080" cy="425" r="30" stroke="black" stroke-width="3" fill="none"/>
+
+            <text x="1067" y="440" font-size="45" font-family="Arial, Helvetica, sans-serif">X</text>
+<!--Out Route-->
+
+              <line x1="1080" y1="395" x2="1080" y2="170" stroke="black" stroke-width="2"/>
+
+              <line x1="1080" y1="170" x2="1180" y2="170" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+
+              <text x="1195" y="160" stroke="black" font-family="Arial, Helvetica, sans-serif">1</text><!--Under Formation-->
+
+        <text x="668" y="510" font-size="60" font-family="Arial, Helvetica, sans-serif">Q</text>
+
+        <circle cx="690" cy="660" r="30" stroke="black" stroke-width="3" fill="none"/>
+
+        <text x="677" y="675" font-size="45" font-family="Arial, Helvetica, sans-serif">A</text>
+
+        <!--RB Block-->
+
+        <line x1="690" y1="630" x2 ="580" y2="505" stroke="black" stroke-width="3"/>
+
+        <line x1="560" y1="505" x2="600" y2="505" stroke="black" stroke-width="3"/>
+</svg>
